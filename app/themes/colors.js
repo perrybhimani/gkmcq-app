@@ -1,0 +1,56 @@
+const WHITE = '#ffffff';
+const BLACK = '#000000';
+
+const THICK_GRAY = '#5D5FB4';
+const THICK_WHITE = '#FDFDFE';
+const THICK_PURPLE = '#AB33FC';
+const BLUE = '#212398';
+const NEVY_BLUE = '#300FB2';
+const GRAY = '#333333';
+const LIGHT_GRAY = '#6E6E6E';
+const PURPLE = '#BD2EFC';
+const LIGHT_BLUE = '#9EADD5';
+const GREEN = '#37D512';
+const ROCK_BLUE = '#9DACD4';
+const YELLOW = '#FECD04';
+const ORANGE = '#F4744D';
+const DARK_ORANGE = '#e64825';
+const BRIGHT_BLUE = '#245dfa';
+const RED_ACTIVE = '#F03030';
+const THICK_BLUE = '#9EADD5';
+const FIRST_TAP_CIRCLE = '#245DFA';
+const SECOND_TAP_CIRCLE = '#a7befd';
+const THIRD_TAP_CIRCLE = '#d3defe';
+const DARK_YELLOW = '#FFD857';
+const SKY_BLUE = '#AFD7EF';
+const BLUE_DARK = '#4E35FA';
+const LIGHT_BLACK = '#2d302f'
+
+export {
+  WHITE,
+  SKY_BLUE,
+  LIGHT_BLACK,
+  BLUE_DARK,
+  BLACK,
+  THICK_GRAY,
+  THICK_WHITE,
+  THICK_PURPLE,
+  BLUE,
+  DARK_YELLOW,
+  NEVY_BLUE,
+  GRAY,
+  LIGHT_GRAY,
+  PURPLE,
+  GREEN,
+  LIGHT_BLUE,
+  ROCK_BLUE,
+  YELLOW,
+  ORANGE,
+  DARK_ORANGE,
+  BRIGHT_BLUE,
+  RED_ACTIVE,
+  THICK_BLUE,
+  FIRST_TAP_CIRCLE,
+  SECOND_TAP_CIRCLE,
+  THIRD_TAP_CIRCLE,
+};
