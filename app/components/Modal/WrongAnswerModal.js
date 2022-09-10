@@ -6,28 +6,45 @@ import { responsiveHeight, responsiveWidth } from '../../utils/scalingUtils';
 import { styles } from './style';
 
 const WrongAnswerModal = (props) => {
-  const { display, onPress } = props;
+  const { display, onPress, onPressNext } = props;
   return (
     <View>
-      <Modal transparent visible={display} >
+      <Modal transparent visible={display}>
         <View style={styles.container}>
           <View style={styles.modalContainer}>
             <View style={styles.modalIconContainer}>
-              <SvgXml width={responsiveWidth(28)} height={responsiveHeight(25)} xml={Icons.WRONG_ANS} />
+              <SvgXml
+                width={responsiveWidth(28)}
+                height={responsiveHeight(25)}
+                xml={Icons.ANSWER}
+              />
             </View>
             <View style={styles.modalTextContainer}>
-              <Text style={styles.wrongText}>WRONG</Text>
-              <Text style={styles.subTextStyle}>Your Answer is Incorrect</Text>
-              <TouchableOpacity
-                style={styles.doneButton}
-                onPress={() => {
-                  if (onPress) {
-                    onPress();
-                  }
-                }}
-              >
-                <Text style={styles.doneButtonText}>{'Done'}</Text>
-              </TouchableOpacity>
+              <Text style={styles.wrongText}>OOPS!</Text>
+              <Text style={styles.wrongText}>Too close!! </Text>
+              <Text style={styles.subTextStyle}>Incorrect answer!</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <TouchableOpacity
+                  style={styles.doneButton}
+                  onPress={() => {
+                    if (onPress) {
+                      onPress();
+                    }
+                  }}
+                >
+                  <Text style={styles.doneButtonText}>{'Done'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.doneButton}
+                  onPress={() => {
+                    if (onPressNext) {
+                      onPressNext();
+                    }
+                  }}
+                >
+                  <Text style={styles.doneButtonText}>{'Next Question'}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>

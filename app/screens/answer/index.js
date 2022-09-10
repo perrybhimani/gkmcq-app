@@ -35,7 +35,7 @@ function Answer(props) {
   const optionData = route.params.data;
   const questionType = route.params.questionType;
   const correctAnswer = route?.params?.answer;
-  const [visible, setVisible] = React.useState(true);
+  const [visible, setVisible] = React.useState(false);
 
   const promptAudios =
     (optionData &&
@@ -45,9 +45,9 @@ function Answer(props) {
       )) ||
     [];
 
-  useEffect(() => {
-    props.setIsBackEffect(true);
-  }, []);
+  // useEffect(() => {
+  //   props.setIsBackEffect(true);
+  // }, []);
 
   useEffect(() => {
     return () => {
@@ -193,7 +193,7 @@ function Answer(props) {
       </View>
     );
   };
-
+console.log("visible", visible)
   return (
     <View style={styles.container}>
       {visible && (

@@ -122,7 +122,7 @@ function ProfileScreen(props) {
       { cancelable: false }
     );
   };
-console.log(userProfileData)
+
   const renderHeader = () => {
     return (
       <View style={styles.headerContainer}>
@@ -262,13 +262,7 @@ console.log(userProfileData)
           keyExtractor={(item, index) => index}
           renderItem={(item, index) => {
             return (
-              <LinearGradient
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={[styles.onGoingTopicContainer, { elevation: 0 }]}
-                colors={['#245dfa', '#7444fb', '#bd2efc']}
-              >
-                <TouchableOpacity
+              <TouchableOpacity
                   style={styles.noOngoingTopicTouchArea}
                   onPress={async () => {
                     await props.getSelectedTopicId(item.item.topicId);
@@ -278,10 +272,17 @@ console.log(userProfileData)
                     });
                   }}
                 >
+              <LinearGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={[styles.onGoingTopicContainer, { elevation: 0 }]}
+                colors={["#543DFA", "#F47676", "#FFD857"]}
+              >
+                
                   <CircularProgress
-                    style={{ transform: [{ scaleX: -1 }] }}
-                    size={60}
-                    width={5.5}
+                    style={{ transform: [{ scaleX: -1 }], alignSelf: 'center' }}
+                    size={responsiveWidth(18)}
+                    width={4}
                     fill={item.item.progress}
                     rotation={360}
                     tintColor={Colors.GREEN}
@@ -297,7 +298,6 @@ console.log(userProfileData)
                       </View>
                     )}
                   </CircularProgress>
-                </TouchableOpacity>
                 <View style={styles.onGoingInnerContainer}>
                   <Text style={styles.onGoingTitleText}>
                     {item.item.topicName}
@@ -306,7 +306,9 @@ console.log(userProfileData)
                     item.item.progress
                   )}% Completed`}</Text>
                 </View>
-              </LinearGradient>
+                </LinearGradient>
+                </TouchableOpacity>
+                
             );
           }}
         />
@@ -388,15 +390,15 @@ console.log(userProfileData)
       <View
         style={[
           styles.noTopicContainer,
-          { paddingVertical: responsiveHeight(1) },
+          { paddingVertical: responsiveHeight(1), marginTop: responsiveHeight(2) },
         ]}
       >
         <View style={{ flexDirection: 'row' }}>
           <View style={styles.dailyStreakTextView}>
             <Text style={styles.streaksTitleText}>{profile.STREAK}</Text>
-            {dailyStreakData.hotStreak && (
+            {/* {dailyStreakData.hotStreak && (
               <SvgXml xml={Icons.TITLE} style={styles.streaksIconStyle} />
-            )}
+            )} */}
           </View>
           {dailyStreakData.hotStreak && (
             <View style={styles.monthTextView}>
@@ -582,8 +584,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: responsiveHeight(50),
-    borderWidth: 3,
-    borderColor: Colors.LIGHT_BLUE,
+    borderWidth: responsiveWidth(0.6),
+    borderColor: Colors.LIGHT_BLACK,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -792,31 +794,31 @@ const styles = StyleSheet.create({
         ? isIphoneXorAbove()
           ? responsiveHeight(17.5)
           : responsiveHeight(20)
-        : responsiveHeight(18),
+        : responsiveHeight(21),
     marginHorizontal: responsiveWidth(4),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: responsiveWidth(3),
   },
   onGoingInnerContainer: {
-    backgroundColor: Colors.SKY_BLUE,
+    backgroundColor: '#543DFA',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: responsiveHeight(2),
     width: responsiveWidth(35),
-    height: responsiveHeight(6),
+    height: responsiveHeight(7),
     borderRadius: responsiveWidth(2),
   },
   onGoingTitleText: {
-    fontSize: responsiveFontSize(2),
+    fontSize: responsiveFontSize(2.2),
     fontFamily: Fonts.NUNITO_SEMI_BOLD,
-    color: Colors.BLACK,
+    color: Colors.WHITE,
   },
   onGoingSubTitleText: {
-    marginTop: responsiveHeight(0.5),
-    fontSize: responsiveFontSize(1.3),
+    marginTop: responsiveHeight(0.2),
+    fontSize: responsiveFontSize(1.5),
     fontFamily: Fonts.NUNITO_REGULAR,
-    color: Colors.LIGHT_GRAY,
+    color: Colors.BLACK,
   },
   streaksTitleText: {
     fontSize: responsiveFontSize(1.8),

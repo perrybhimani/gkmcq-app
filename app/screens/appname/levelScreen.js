@@ -64,7 +64,7 @@ function TopicComponent(props) {
     >
       <CircularProgress
         style={{ transform: [{ scaleX: -1 }], alignSelf: 'center' }}
-        size={responsiveWidth(17)}
+        size={responsiveWidth(20)}
         width={4}
         fill={props.progress}
         rotation={360}

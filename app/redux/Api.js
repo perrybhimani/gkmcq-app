@@ -21,6 +21,7 @@ import {
 import { getToken, setToken } from "../utils/storageUtils";
 import { common } from "../constants/strings";
 import moment from "moment";
+import setAuthToken from '../utils/setAuthToken';
 
 axios.defaults.baseURL = BASE_URL;
 
@@ -30,6 +31,9 @@ export async function signUp(data) {
     .then((res) => {
       const responseData = idx(res, (_) => _.data.data) || {};
       const status = idx(res, (_) => _.status);
+      const userToken = idx(responseData, (_) => _.token) || '';
+      setAuthToken(userToken);
+      setToken(userToken);
       return { status, data: responseData };
     })
     .catch((error) => {

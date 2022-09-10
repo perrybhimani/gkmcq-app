@@ -1,21 +1,22 @@
-import idx from "idx";
-import React from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
-import { BarChart } from "react-native-chart-kit";
-import { addWeekDaysIfNot, GRAPH_TIME_PERIODS } from "../../utils/commonUtils";
+import idx from 'idx';
+import React, { useRef } from 'react';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { BarChart } from 'react-native-chart-kit';
+import { addWeekDaysIfNot, GRAPH_TIME_PERIODS } from '../../utils/commonUtils';
 import {
   deviceWidth,
   responsiveHeight,
   responsiveWidth,
-} from "../../utils/scalingUtils";
+} from '../../utils/scalingUtils';
 
-import * as Colors from "./../../themes/colors";
+import * as Colors from './../../themes/colors';
 
 export function YLabelFormat(value) {
-  const yLabel = value >= 0 ? value : "";
+  const yLabel = value >= 0 ? value : '';
   return yLabel;
 }
 const TimePeriodGraph = (props) => {
+  const scrollRef = useRef(null);
   const { categoryData, dataType, dataKey, showBarChart } = props;
   const isYear = dataType === GRAPH_TIME_PERIODS[2].key;
   const isMonth = dataType === GRAPH_TIME_PERIODS[1].key;
@@ -29,7 +30,7 @@ const TimePeriodGraph = (props) => {
   const chartConfig = {
     formatYLabel: (label) => YLabelFormat(label),
     barPercentage: 0.3,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     backgroundGradientFrom: Colors.WHITE,
     backgroundGradientTo: Colors.WHITE,
     decimalPlaces: 2,
@@ -37,24 +38,30 @@ const TimePeriodGraph = (props) => {
     labelColor: (opacity = 1) => `rgba(52, 52, 52, ${opacity})`,
     fillShadowGradientOpacity: 1,
     barRadius: 5,
-    fillShadowGradientTo: "#bd2efc",
-    fillShadowGradientFrom: "#245dfa",
+    fillShadowGradientTo: '#bd2efc',
+    fillShadowGradientFrom: '#245dfa',
     styles: {
       borderRadius: 20,
     },
     propsForDots: {
-      r: "6",
-      strokeWidth: "0",
-      stroke: "#fbfbfb",
+      r: '6',
+      strokeWidth: '0',
+      stroke: '#fbfbfb',
     },
   };
+
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ x: 0, y: 0, animated: true });
+    }
+  }, [dataType]);
 
   const generateGraphData = () => {
     const data = arrangedData.map((elm) => {
       return elm.totalQuestions;
     });
 
-    if (dataType === "week") {
+    if (dataType === 'week') {
       return {
         labels: arrangedData.map((el) => {
           const day = el.day;
@@ -68,7 +75,7 @@ const TimePeriodGraph = (props) => {
           },
         ],
       };
-    } else if (dataType === "month") {
+    } else if (dataType === 'month') {
       return {
         labels: arrangedData.map((el) => {
           const day = el.day;
@@ -80,7 +87,7 @@ const TimePeriodGraph = (props) => {
           },
         ],
       };
-    } else if (dataType === "year") {
+    } else if (dataType === 'year') {
       return {
         labels: arrangedData.map((el) => {
           const day = el.day;
@@ -105,7 +112,8 @@ const TimePeriodGraph = (props) => {
   return (
     <View>
       <ScrollView
-        keyboardShouldPersistTaps={"always"}
+        ref={scrollRef}
+        keyboardShouldPersistTaps={'always'}
         showsHorizontalScrollIndicator={false}
         horizontal
       >

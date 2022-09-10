@@ -47,7 +47,7 @@ const SignUp = (props) => {
     props.signup(data, (resp) => {
       setIsLoading(false);
       if (resp.status === 200) {
-        resetRoute(navigation, screens.LOGIN);
+        resetRoute(navigation, screens.TAB_CONTAINER);
       } else {
         Alert.alert(resp.message);
       }

@@ -1,50 +1,50 @@
-import moment from "moment";
+import moment from 'moment';
 
 export const TIME_PERIODS = [
-  { title: "Weekly", key: "week" },
-  { title: "Monthly", key: "month" },
+  { title: 'Weekly', key: 'week' },
+  { title: 'Monthly', key: 'month' },
 ];
 
 export const GRAPH_TIME_PERIODS = [
-  { title: "Daily", key: "week" },
-  { title: "Weekly", key: "month" },
-  { title: "Monthly", key: "year" },
+  { title: 'Daily', key: 'week' },
+  { title: 'Weekly', key: 'month' },
+  { title: 'Monthly', key: 'year' },
 ];
 
 export const WEEK_DAYS_ARRAY = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday"
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
 ];
 
 export const MONTH_ARRAY = [
-  "jan",
-  "feb",
-  "march",
-  "april",
-  "may",
-  "june",
-  "july",
-  "august",
-  "sept",
-  "oct",
-  "nov",
-  "dec",
+  'jan',
+  'feb',
+  'mar',
+  'apr',
+  'may',
+  'jun',
+  'jul',
+  'aug',
+  'sep',
+  'oct',
+  'nov',
+  'dec',
 ];
 
 export const addWeekDaysIfNot = (cData, dataKey, dataType, isBarChart) => {
   const newData = [...cData];
   const monthData = newData.map((el) => {
     return {
-      day: parseInt(moment(el.date).format("D")),
+      day: parseInt(moment(el.date).format('D')),
       [dataKey]: el[dataKey],
     };
   });
-  if (isBarChart && dataType === "week") {
+  if (isBarChart && dataType === 'week') {
     const remainingDays = WEEK_DAYS_ARRAY.filter(
       (el) => !newData.map((e) => e.day).includes(el)
     );
@@ -63,10 +63,10 @@ export const addWeekDaysIfNot = (cData, dataKey, dataType, isBarChart) => {
       Thursday: 4,
       Friday: 5,
       Saturday: 6,
-      Sunday: 7
+      Sunday: 7,
     };
     return newData.sort((a, b) => sorter[a.day] - sorter[b.day]);
-  } else if (isBarChart && dataType === "month") {
+  } else if (isBarChart && dataType === 'month') {
     let monthDays = moment().daysInMonth();
     const DAYS_ARRAY = Array.from({ length: monthDays }, (_, i) => i + 1);
     const remainingMonths = DAYS_ARRAY.filter(
@@ -81,7 +81,7 @@ export const addWeekDaysIfNot = (cData, dataKey, dataType, isBarChart) => {
     });
     monthData.sort((a, b) => a.day - b.day);
     return monthData;
-  } else if (isBarChart && dataType === "year") {
+  } else if (isBarChart && dataType === 'year') {
     const remainingYears = MONTH_ARRAY.filter(
       (el) => !newData.map((e) => e.month).includes(el)
     );
@@ -95,13 +95,13 @@ export const addWeekDaysIfNot = (cData, dataKey, dataType, isBarChart) => {
     const sorter = {
       jan: 1,
       feb: 2,
-      march: 3,
-      april: 4,
+      mar: 3,
+      apr: 4,
       may: 5,
-      june: 6,
-      july: 7,
-      august: 8,
-      sept: 9,
+      jun: 6,
+      jul: 7,
+      aug: 8,
+      sep: 9,
       oct: 10,
       nov: 11,
       dec: 12,
@@ -113,4 +113,22 @@ export const addWeekDaysIfNot = (cData, dataKey, dataType, isBarChart) => {
     }));
     return changedKey;
   }
+};
+
+export const groupBy = function (arr, key) {
+  const newData = [...new Map(arr.map((item) => [item[key], item])).values()];
+  return newData;
+};
+
+export const notificationGroupBy = function (xs, key) {
+  let finalObj = {};
+  const newData = xs.forEach((games) => {
+    const local = moment.utc(games.createdAt).local().format('YYYY-MM-DD');
+    if (finalObj[local]) {
+      finalObj[local].push(games);
+    } else {
+      finalObj[local] = [games];
+    }
+  });
+  return finalObj;
 };

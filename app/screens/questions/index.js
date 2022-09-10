@@ -25,6 +25,7 @@ import FloatingAction from '../../components/FloatingAction/FloatingAction';
 import {
   REQUEST_GET_QUESTION_BY_ID,
   REQUEST_LIST_QUESTIONS,
+  REQUEST_GET_SELECTED_QUESTIONID,
   REQUEST_SUBMIT_QUESTION,
 } from '../../redux/actions/questionActions';
 import { connect } from 'react-redux';
@@ -35,6 +36,8 @@ import { Option } from '../../constants/strings';
 import { Button } from '../../components/Button';
 import { resetRoute } from '../../utils/navigationUtils';
 // import DraggableFlatList from 'react-native-draggable-dynamic-flatlist';
+import CorrectAnswerModal from '../../components/Modal/CorrectAnswerModal';
+import WrongAnswerModal from '../../components/Modal/WrongAnswerModal';
 import Image from 'react-native-fast-image';
 // import Draggable from '../../components/DragAndDrop/Draggable';
 
@@ -112,7 +115,8 @@ function QuestionScreen(props) {
 
   const [optionAudios, setOptionAudios] = React.useState([]);
   const [audio, setAudio] = React.useState(null);
-  const [selectedOption, setselectedOption] = React.useState('')
+  const [selectedOption, setselectedOption] = React.useState('');
+  const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
     if (questionToDisplay.type === 'Ranking (Audio)')
@@ -134,6 +138,100 @@ function QuestionScreen(props) {
         )
       );
   }, [questionToDisplay]);
+
+  // useEffect(() => {
+  //   props.setIsBackEffect(true);
+  // }, []);
+
+  const onNextQuestion = async () => {
+    const questionsIds = props.questionList?.questionIds || [];
+    const questionIndex =
+      questionToDisplay &&
+      questionsIds.findIndex((id) => id === questionToDisplay._id);
+    const data = await props.getSelectedQestionId(
+      questionsIds[questionIndex ? questionIndex + 1 : 1]
+    );
+    const selectedQuesId = questionsIds[questionIndex ? questionIndex + 1 : 1]
+    props.getQuestionById(selectedQuesId, (res) => {
+      if (res.status === 200) {
+        setQuestionToDisplay(res?.data);
+        const result = res?.data?.options
+          ?.map((value) => ({ value, sort: Math.random() }))
+          ?.sort((a, b) => a.sort - b.sort)
+          ?.map(({ value }) => value);
+        setSubmitRanking(result);
+        setLoading(false);
+      } else {
+        setQuestionToDisplay({});
+        setLoading(false);
+      }
+    });
+    // await navigation.navigate(screens.QUESTION_SCREEN, {
+    //   selected: true,
+    // });
+  };
+
+  const modalView = (optionData, headerTitle, questionType) => {
+    if (
+      questionType === 'Ranking' ||
+      questionType === 'Mix and Match' ||
+      questionType === 'Ranking (Audio)'
+    ) {
+      return optionData.submittedAnswer.toString() ===
+        correctAnswer.toString() ? (
+        <CorrectAnswerModal
+          display={visible}
+          onPress={() => {
+            // props.setIsBackEffect(false);
+            setVisible(false);
+          }}
+          onPressNext={() => {
+            setVisible(false);
+            onNextQuestion();
+          }}
+        />
+      ) : (
+        <WrongAnswerModal
+          display={visible}
+          onPress={() => {
+            // props.setIsBackEffect(false);
+            setVisible(false);
+          }}
+          onPressNext={() => {
+            onNextQuestion();
+            setVisible(false);
+          }}
+        />
+      );
+    } else {
+      console.log('visible', visible);
+      return selectedOption?.correctAnswer ? (
+        <CorrectAnswerModal
+          display={visible}
+          onPress={() => {
+            // props.setIsBackEffect(false);
+            setVisible(false);
+          }}
+          onPressNext={() => {
+            onNextQuestion();
+            setVisible(false);
+          }}
+        />
+      ) : (
+        <WrongAnswerModal
+          display={visible}
+          onPress={() => {
+            // props.setIsBackEffect(false);
+            setVisible(false);
+          }}
+          onPressNext={() => {
+            onNextQuestion();
+            setVisible(false);
+          }}
+        />
+      );
+    }
+  };
 
   // const optionAudios =
   //   (questionToDisplay.options &&
@@ -187,21 +285,22 @@ function QuestionScreen(props) {
         questionType: questionToDisplay.type,
       });
     } else {
-      console.log('item', item)
       const data = {
         topicId: props.selectedTopicId,
         questionId: questionToDisplay._id,
-        submittedAnswer: [item.option],
+        submittedAnswer: [selectedOption.option],
         submitDate: moment(),
       };
       props.submitQuestion(data, (resp) => {
-        console.log('resp2233', resp);
+        console.log('resp', resp);
+        setVisible(true);
       });
-      navigation.navigate(screens.ANSWER, {
-        data: item,
-        title: questionToDisplay.title,
-        questionType: questionToDisplay.type,
-      });
+      console.log('item', selectedOption);
+      // navigation.navigate(screens.ANSWER, {
+      //   data: item,
+      //   title: questionToDisplay.title,
+      //   questionType: questionToDisplay.type,
+      // });
     }
   };
 
@@ -221,16 +320,11 @@ function QuestionScreen(props) {
   };
 
   const progressBar = () => {
-    if (
-      questionToDisplay.type === 'MCQ' ||
-      questionToDisplay.type === 'Ranking'
-    ) {
-      return (
-        <>
-          <ProgressBar width={questionProgress} height={responsiveHeight(1)} />
-        </>
-      );
-    }
+    return (
+      <>
+        <ProgressBar width={questionProgress} height={responsiveHeight(1.5)} />
+      </>
+    );
   };
 
   const audioPlay = () => {
@@ -370,13 +464,26 @@ function QuestionScreen(props) {
                   )}
                   <TouchableOpacity
                     style={styles.optionView(
-                      questionToDisplay.type === 'MCQ (Audio)'
+                      questionToDisplay.type === 'MCQ (Audio)',
+                      selectedOption
+                        ? selectedOption?._id.toString() ===
+                            item?._id.toString()
+                        : false
                     )}
                     // onPress={() => submitQuestion(item)}
                     onPress={async () => await setselectedOption(item)}
                   >
                     {questionToDisplay.type === 'MCQ' && (
-                      <Text style={styles.optionText}>{item.option}</Text>
+                      <Text
+                        style={styles.optionText(
+                          selectedOption
+                            ? selectedOption?._id.toString() ===
+                                item?._id.toString()
+                            : false
+                        )}
+                      >
+                        {item.option}
+                      </Text>
                     )}
                     {questionToDisplay.type === 'MCQ (Audio)' && (
                       <TouchableOpacity
@@ -387,7 +494,7 @@ function QuestionScreen(props) {
                           start={{ x: 0, y: 0 }}
                           end={{ x: 0, y: 1 }}
                           style={[styles.playOptionIconView, { marginLeft: 0 }]}
-                          colors={["#543DFA", "#F47676", "#FFD857"]}
+                          colors={['#543DFA', '#F47676', '#FFD857']}
                         >
                           <SvgXml
                             xml={Icons.PLAY}
@@ -429,7 +536,7 @@ function QuestionScreen(props) {
         </TouchableOpacity> */}
         <Button
           onPress={() => {
-            navigation.navigate(screens.APPNAME)
+            navigation.navigate(screens.APPNAME);
           }}
           title={Option.CANCEL}
           wrapperStyle={styles.buttonStyle}
@@ -817,7 +924,7 @@ function QuestionScreen(props) {
   }, [selected, props.selectedTopicId]);
 
   const questionProgress =
-    (questions.submittedQuestion * 100) / questions.submittedQuestion;
+    (questions.submittedQuestion * 100) / questions.totalQuestion;
 
   const onPlayQuestionAudio = () => {
     audio.play();
@@ -835,6 +942,20 @@ function QuestionScreen(props) {
         setEnableScrollViewScroll(true);
       }}
     >
+      {visible && (
+        <View
+          style={{
+            position: 'absolute',
+            bottom: responsiveHeight(6.5) + 10,
+            left: 0,
+            right: 0,
+            top: 0,
+            backgroundColor: Colors.BLACK,
+            zIndex: 1,
+            opacity: 0.6,
+          }}
+        />
+      )}
       {loading ? (
         <View style={styles.spinner}>
           <CustomLoader isLoading={loading} />
@@ -900,6 +1021,7 @@ function QuestionScreen(props) {
           </ScrollView>
         </>
       )}
+      {visible ? modalView() : null}
     </View>
   );
 }
@@ -918,6 +1040,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch({ type: REQUEST_GET_QUESTION_BY_ID, questionId, callBack }),
     submitQuestion: (data, callBack) =>
       dispatch({ type: REQUEST_SUBMIT_QUESTION, data, callBack }),
+    getSelectedQestionId: (questionId) =>
+      dispatch({ type: REQUEST_GET_SELECTED_QUESTIONID, questionId }),
   };
 };
 
@@ -946,7 +1070,7 @@ const styles = StyleSheet.create({
     marginTop: responsiveHeight(1.5),
     fontFamily: Fonts.NUNITO_BOLD,
     fontSize: responsiveFontSize(2),
-    color: Colors.LIGHT_BLACK
+    color: Colors.LIGHT_BLACK,
   },
   imageStyle: {
     height: responsiveHeight(20),
@@ -996,7 +1120,7 @@ const styles = StyleSheet.create({
     marginHorizontal: responsiveWidth(3),
     marginVertical: responsiveHeight(1),
   },
-  optionView: (isMcqAudio) => ({
+  optionView: (isMcqAudio, selected) => ({
     borderWidth: responsiveWidth(0.2),
     width: (deviceWidth - responsiveWidth(13)) / 2,
     height: !isMcqAudio ? responsiveHeight(5.5) : 'auto',
@@ -1005,6 +1129,7 @@ const styles = StyleSheet.create({
     marginHorizontal: responsiveWidth(3),
     marginVertical: responsiveHeight(1),
     borderColor: Colors.NEVY_BLUE,
+    backgroundColor: selected ? Colors.THICK_GRAY : null,
     padding: isMcqAudio ? responsiveWidth(2.5) : 0,
   }),
   buttonStyle: {
@@ -1017,12 +1142,12 @@ const styles = StyleSheet.create({
     marginVertical: responsiveHeight(5),
     borderColor: '#F47676',
   },
-  optionText: {
-    color: Colors.BLACK,
+  optionText: (selected) => ({
+    color: selected ? Colors.WHITE : Colors.BLACK,
     textAlign: 'center',
     fontFamily: Fonts.NUNITO_MEDIUM,
     fontSize: responsiveFontSize(1.8),
-  },
+  }),
   hintIconView: {
     flexDirection: 'row',
     justifyContent: 'center',
