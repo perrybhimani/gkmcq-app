@@ -41,10 +41,6 @@ function AppName(props) {
           leftIconStyle={styles.leftIcon}
           rightIconPress={() => props.navigation.navigate(screens.NOTIFICATION)}
         />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-          <SvgXml style={styles.titleIcon} xml={Icons.TITLE} />
-          <SvgXml style={styles.bookIcon} xml={Icons.BOOK} />
-        </View>
         <View style={styles.circleContainer}>
           <View style={styles.userImageContainer}>
             <TouchableOpacity
